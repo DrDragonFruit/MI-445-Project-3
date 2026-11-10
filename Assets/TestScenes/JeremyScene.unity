@@ -165,27 +165,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrapplingGun
   grappleRope: {fileID: 1727887531}
+  playerMovement: {fileID: 1734202420}
   grappleToAll: 0
   grappableLayerNumber: 9
   m_camera: {fileID: 1673020965}
   gunHolder: {fileID: 1734202418}
   gunPivot: {fileID: 424198974}
   firePoint: {fileID: 424198974}
-  m_springJoint2D: {fileID: 0}
   m_rigidbody: {fileID: 1734202419}
   rotateOverTime: 0
   rotationSpeed: 4
-  orbitAcceleration: 20
   hasMaxDistance: 1
   maxDistnace: 10
-  launchToPoint: 1
-  launchType: 1
-  launchSpeed: 1
-  autoConfigureDistance: 0
-  targetDistance: 3
-  targetFrequncy: 1
   grapplePoint: {x: 0, y: 0}
   grappleDistanceVector: {x: 0, y: 0}
+  collisionLayers:
+    serializedVersion: 2
+    m_Bits: 512
+  collisionOffset: 0.02
 --- !u!1 &1064668294
 GameObject:
   m_ObjectHideFlags: 0
@@ -729,7 +726,6 @@ GameObject:
   - component: {fileID: 1734202417}
   - component: {fileID: 1734202419}
   - component: {fileID: 1734202420}
-  - component: {fileID: 1734202422}
   - component: {fileID: 1734202421}
   m_Layer: 3
   m_Name: Player
@@ -893,27 +889,6 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
---- !u!231 &1734202422
-SpringJoint2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1734202416}
-  m_Enabled: 1
-  serializedVersion: 4
-  m_EnableCollision: 1
-  m_ConnectedRigidBody: {fileID: 0}
-  m_BreakForce: Infinity
-  m_BreakTorque: Infinity
-  m_BreakAction: 3
-  m_AutoConfigureConnectedAnchor: 0
-  m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 0, y: 0}
-  m_AutoConfigureDistance: 1
-  m_Distance: 10.199436
-  m_DampingRatio: 1
-  m_Frequency: 1
 --- !u!1 &1954349068
 GameObject:
   m_ObjectHideFlags: 0

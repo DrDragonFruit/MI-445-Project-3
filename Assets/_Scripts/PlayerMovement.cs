@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -12,15 +13,15 @@ public class PlayerMovement : MonoBehaviour
     [Header("References")]
     [SerializeField] private GrapplingGun grapplingGun;
 
-    public float MaxSpeed => maxSpeed;
-    public float Acceleration => movementSpeed;
-    public float Deceleration => deceleration;
-
     private float horizontalInput;
+    private float currentSpeed;
+
+    public float CurrentSpeed => currentSpeed;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        if (grapplingGun == null) grapplingGun = GetComponentInChildren<GrapplingGun>();
     }
 
     private void Update()
@@ -30,16 +31,22 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (grapplingGun != null && grapplingGun.IsOrbiting) 
-            return;
-
         float acceleration = horizontalInput != 0 ? movementSpeed : deceleration;
         float targetSpeed = horizontalInput * maxSpeed;
 
-        Vector2 moveDirection = transform.right;
-        float currentSpeed = Vector2.Dot(rb.linearVelocity, moveDirection);
-        float newSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, acceleration * Time.fixedDeltaTime);
+        currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, acceleration * Time.fixedDeltaTime);
 
-        rb.linearVelocity = moveDirection * newSpeed;
+        if (grapplingGun != null && grapplingGun.IsOrbiting) 
+            return;
+
+        Vector2 moveDirection = transform.right;
+        rb.linearVelocity = moveDirection * currentSpeed;
+    }
+
+    public void StopMovement()
+    {
+        currentSpeed = 0f;
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
     }
 }

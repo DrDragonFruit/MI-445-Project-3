@@ -1,5 +1,6 @@
 
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GrapplingGun : MonoBehaviour
 {
@@ -62,34 +63,16 @@ public class GrapplingGun : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            SetGrapplePoint();
-        }
-        else if (Input.GetKey(KeyCode.Mouse0))
-        {
-            if (grappleRope.enabled)
-            {
-                RotateGun(grapplePoint, false);
-            }
-            else
-            {
-                RotateGun(GetMouseWorldPosition(), true);
-            }
-        }
-        else if (Input.GetKeyUp(KeyCode.Mouse0))
-        {
-            StopGrapple();
-        }
+        if (grappleRope.enabled)
+            RotateGun(grapplePoint, false);
         else
-        {
             RotateGun(GetMouseWorldPosition(), true);
-        }
     }
 
     private void FixedUpdate()
     {
-        if (!isOrbiting) return;
+        if (!isOrbiting) 
+            return;
 
         Orbit();
     }
@@ -102,7 +85,7 @@ public class GrapplingGun : MonoBehaviour
         Vector2 direction = m_rigidbody.position - grapplePoint;
         float radius = direction.magnitude;
 
-        if (radius < 0.001f) 
+        if (radius < 0.001f)
             return;
 
         float speed = playerMovement.CurrentSpeed;
@@ -111,7 +94,7 @@ public class GrapplingGun : MonoBehaviour
         Vector2 nextPosition = grapplePoint + (Vector2)(Quaternion.Euler(0f, 0f, angle) * direction);
         Vector2 movement = nextPosition - m_rigidbody.position;
 
-        if (movement.sqrMagnitude < 0.000001f) 
+        if (movement.sqrMagnitude < 0.000001f)
             return;
 
         ContactFilter2D filter = new ContactFilter2D();
@@ -145,13 +128,13 @@ public class GrapplingGun : MonoBehaviour
         }
     }
 
-    private void SetGrapplePoint()
+    public void SetGrapplePoint()
     {
         Vector2 mousePos = GetMouseWorldPosition();
         Vector2 origin = firePoint.position;
         Vector2 direction = mousePos - origin;
 
-        if (direction.sqrMagnitude < 0.0001f) 
+        if (direction.sqrMagnitude < 0.0001f)
             return;
 
         int playerLayer = gunHolder.gameObject.layer;
@@ -159,13 +142,13 @@ public class GrapplingGun : MonoBehaviour
 
         RaycastHit2D hit = Physics2D.Raycast(origin, direction.normalized, direction.magnitude, layerMask);
 
-        if (hit.collider == null) 
+        if (hit.collider == null)
             return;
 
-        if (!grappleToAll && hit.collider.gameObject.layer != grappableLayerNumber) 
+        if (!grappleToAll && hit.collider.gameObject.layer != grappableLayerNumber)
             return;
 
-        if (hasMaxDistance && Vector2.Distance(hit.point, origin) > maxDistnace) 
+        if (hasMaxDistance && Vector2.Distance(hit.point, origin) > maxDistnace)
             return;
 
         grapplePoint = hit.point;
@@ -176,10 +159,13 @@ public class GrapplingGun : MonoBehaviour
 
     public void Grapple()
     {
-        if (!Input.GetKey(KeyCode.Mouse0)) 
+        if (!playerMovement.IsGrappleHeld())
             return;
 
-        if (isOrbiting) 
+        if (isOrbiting)
+            return;
+
+        if (!grappleRope.enabled)
             return;
 
         StartOrbit();
@@ -189,7 +175,7 @@ public class GrapplingGun : MonoBehaviour
     {
         Vector2 direction = (Vector2)gunHolder.position - grapplePoint;
 
-        if (direction.sqrMagnitude < 0.0001f) 
+        if (direction.sqrMagnitude < 0.0001f)
             return;
 
         Vector2 tangent = new Vector2(-direction.y, direction.x).normalized;
@@ -210,7 +196,7 @@ public class GrapplingGun : MonoBehaviour
         isOrbiting = true;
     }
 
-    private void StopGrapple()
+    public void StopGrapple()
     {
         isOrbiting = false;
         grappleRope.enabled = false;
@@ -221,7 +207,12 @@ public class GrapplingGun : MonoBehaviour
 
     private Vector2 GetMouseWorldPosition()
     {
-        Ray ray = m_camera.ScreenPointToRay(Input.mousePosition);
+        if (Mouse.current == null)
+            return firePoint.position;
+
+        Vector2 mousePosition = Mouse.current.position.ReadValue();
+
+        Ray ray = m_camera.ScreenPointToRay(mousePosition);
         Plane gamePlane = new Plane(Vector3.forward, Vector3.zero);
 
         if (gamePlane.Raycast(ray, out float distance))

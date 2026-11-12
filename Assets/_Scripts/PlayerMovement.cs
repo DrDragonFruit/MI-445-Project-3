@@ -1,5 +1,6 @@
 
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -9,6 +10,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float maxSpeed = 10f;
     [SerializeField] private float movementSpeed = 5f;
     [SerializeField] private float deceleration = 7f;
+
+    public PlayerInputActions playerControls;
+    private InputAction move;
+    private InputAction grapple;
 
     [Header("References")]
     [SerializeField] private GrapplingGun grapplingGun;
@@ -21,12 +26,39 @@ public class PlayerMovement : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        if (grapplingGun == null) grapplingGun = GetComponentInChildren<GrapplingGun>();
+
+        if (grapplingGun == null)
+            grapplingGun = GetComponentInChildren<GrapplingGun>();
+
+        playerControls = new PlayerInputActions();
+        move = playerControls.Player.Move;
+        grapple = playerControls.Player.Grapple;
+    }
+
+    private void OnEnable()
+    {
+        move.Enable();
+        grapple.Enable();
+    }
+
+    private void OnDisable()
+    {
+        move.Disable();
+        grapple.Disable();
     }
 
     private void Update()
     {
-        horizontalInput = Input.GetKey(KeyCode.W) ? 1f : 0f;
+        horizontalInput = move.ReadValue<float>();
+
+        if (grapplingGun == null)
+            return;
+
+        if (grapple.WasPressedThisFrame())
+            grapplingGun.SetGrapplePoint();
+
+        if (grapple.WasReleasedThisFrame())
+            grapplingGun.StopGrapple();
     }
 
     private void FixedUpdate()
@@ -36,11 +68,16 @@ public class PlayerMovement : MonoBehaviour
 
         currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, acceleration * Time.fixedDeltaTime);
 
-        if (grapplingGun != null && grapplingGun.IsOrbiting) 
+        if (grapplingGun != null && grapplingGun.IsOrbiting)
             return;
 
         Vector2 moveDirection = transform.right;
         rb.linearVelocity = moveDirection * currentSpeed;
+    }
+
+    public bool IsGrappleHeld()
+    {
+        return grapple.IsPressed();
     }
 
     public void StopMovement()

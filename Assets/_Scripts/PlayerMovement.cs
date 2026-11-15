@@ -1,4 +1,5 @@
 
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float maxSpeed = 10f;
     [SerializeField] private float movementSpeed = 5f;
     [SerializeField] private float deceleration = 7f;
+    [SerializeField] private GameObject paintSplatter;
 
     public PlayerInputActions playerControls;
     private InputAction move;
@@ -49,6 +51,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        
         horizontalInput = move.ReadValue<float>();
 
         if (grapplingGun == null)
@@ -65,6 +68,9 @@ public class PlayerMovement : MonoBehaviour
     {
         float acceleration = horizontalInput != 0 ? movementSpeed : deceleration;
         float targetSpeed = horizontalInput * maxSpeed;
+        
+
+        
 
         currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, acceleration * Time.fixedDeltaTime);
 

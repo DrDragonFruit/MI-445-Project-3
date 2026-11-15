@@ -25,9 +25,9 @@ public class StyleMeterHandler : MonoBehaviour
     void Update()
     {
         score += scoreGain * Time.deltaTime;
-        Debug.Log(score);
+        //Debug.Log(score);
         score = Mathf.Clamp(score, 0f, MaxStyle);
-        StyleBar.fillAmount = score;
+        //StyleBar.fillAmount = score;
         UpdateStyleMeter();
     }
 

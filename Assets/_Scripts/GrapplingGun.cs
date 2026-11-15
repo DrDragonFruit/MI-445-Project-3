@@ -31,8 +31,8 @@ public class GrapplingGun : MonoBehaviour
     [SerializeField] private bool hasMaxDistance = false;
     [SerializeField] private float maxDistnace = 20f;
 
-    [HideInInspector] public Vector2 grapplePoint;
-    [HideInInspector] public Vector2 grappleDistanceVector;
+    [HideInInspector] public Vector3 grapplePoint;
+    [HideInInspector] public Vector3 grappleDistanceVector;
 
     [Header("Orbit Collision")]
     [SerializeField] private LayerMask collisionLayers;
@@ -42,7 +42,7 @@ public class GrapplingGun : MonoBehaviour
 
     private bool isOrbiting;
     private float orbitDirection = 1f;
-    private RigidbodyType2D originalBodyType;
+    private Rigidbody originalBodyType;
 
     public bool IsOrbiting => isOrbiting;
 

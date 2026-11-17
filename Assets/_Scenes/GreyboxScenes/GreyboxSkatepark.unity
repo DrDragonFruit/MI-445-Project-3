@@ -401,6 +401,8 @@ MonoBehaviour:
   maxSpeed: 20
   movementSpeed: 5
   deceleration: 3
+  paintSplatter: {fileID: 0}
+  stunTimeOnHit: 0.25
   grapplingGun: {fileID: 842364861}
 --- !u!50 &319262993
 Rigidbody2D:

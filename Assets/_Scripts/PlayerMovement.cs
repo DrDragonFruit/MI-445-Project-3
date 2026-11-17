@@ -13,6 +13,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float movementSpeed = 5f;
     [SerializeField] private float deceleration = 7f;
     [SerializeField] private GameObject paintSplatter;
+    [Tooltip("How long the player is stunned when taking damage/being hit by an enemy")]
+    [SerializeField] private float stunTimeOnHit = 0.25f;
 
     public PlayerInputActions playerControls;
     private InputAction move;

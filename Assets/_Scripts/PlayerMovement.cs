@@ -165,4 +165,9 @@ public class PlayerMovement : MonoBehaviour
         kickBufferCounter = 0f;
         return true;
     }
+    public void HitByEnemy()
+    {
+        curElapsedTimeStunned = 0.0f;
+        StopMovement();
+    }
 }

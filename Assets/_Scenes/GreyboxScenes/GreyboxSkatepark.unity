@@ -404,6 +404,8 @@ MonoBehaviour:
   paintSplatter: {fileID: 0}
   stunTimeOnHit: 0.25
   grapplingGun: {fileID: 842364861}
+  coyotteTime: 0.2
+  kickRequested: 0
 --- !u!50 &319262993
 Rigidbody2D:
   serializedVersion: 5
@@ -521,6 +523,67 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CameraFollow
   cameraTransform: {fileID: 1363441286}
   playerTransform: {fileID: 319262995}
+--- !u!1001 &592952303
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4185484675251439036, guid: f72194acf14fd9a45846834e658c4ca5, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 319262990}
+    - target: {fileID: 8613573078721305778, guid: f72194acf14fd9a45846834e658c4ca5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.21630812
+      objectReference: {fileID: 0}
+    - target: {fileID: 8613573078721305778, guid: f72194acf14fd9a45846834e658c4ca5, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.3421547
+      objectReference: {fileID: 0}
+    - target: {fileID: 8613573078721305778, guid: f72194acf14fd9a45846834e658c4ca5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8613573078721305778, guid: f72194acf14fd9a45846834e658c4ca5, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8613573078721305778, guid: f72194acf14fd9a45846834e658c4ca5, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8613573078721305778, guid: f72194acf14fd9a45846834e658c4ca5, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8613573078721305778, guid: f72194acf14fd9a45846834e658c4ca5, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8613573078721305778, guid: f72194acf14fd9a45846834e658c4ca5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8613573078721305778, guid: f72194acf14fd9a45846834e658c4ca5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8613573078721305778, guid: f72194acf14fd9a45846834e658c4ca5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036366968186854862, guid: f72194acf14fd9a45846834e658c4ca5, type: 3}
+      propertyPath: m_Name
+      value: BasicEnemy
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f72194acf14fd9a45846834e658c4ca5, type: 3}
 --- !u!1 &842364860
 GameObject:
   m_ObjectHideFlags: 0
@@ -58148,6 +58211,8 @@ Tilemap:
   m_TileSpriteArray:
   - m_RefCount: 5723
     m_Data: {fileID: -5747546502495466039, guid: 7da0ce1a3287f0e4ea304b6be247bee9, type: 3}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   m_TileMatrixArray:
   - m_RefCount: 5723
     m_Data:
@@ -58170,6 +58235,8 @@ Tilemap:
   m_TileColorArray:
   - m_RefCount: 5723
     m_Data: {r: 1, g: 1, b: 1, a: 1}
+  - m_RefCount: 0
+    m_Data: {r: 1.67e-43, g: 1.67e-43, b: 1.67e-43, a: 1.67e-43}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -76406,6 +76473,8 @@ Tilemap:
   m_TileColorArray:
   - m_RefCount: 1808
     m_Data: {r: 1, g: 1, b: 1, a: 1}
+  - m_RefCount: 0
+    m_Data: {r: 5e-44, g: 5e-44, b: 5e-44, a: 5e-44}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -76521,3 +76590,4 @@ SceneRoots:
   - {fileID: 1363441286}
   - {fileID: 319262995}
   - {fileID: 2110446124}
+  - {fileID: 592952303}

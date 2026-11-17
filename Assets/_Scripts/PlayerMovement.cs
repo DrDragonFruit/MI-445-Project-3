@@ -95,26 +95,29 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector2 moveDirection = transform.right;
-
-        if (kickBufferCounter > 0f && isTouchingWall)
+        if (curElapsedTimeStunned >= stunTimeOnHit)
         {
-            WallKick(wallNormal);
-            kickBufferCounter = 0f;
+            Vector2 moveDirection = transform.right;
+
+            if (kickBufferCounter > 0f && isTouchingWall)
+            {
+                WallKick(wallNormal);
+                kickBufferCounter = 0f;
+            }
+
+            float acceleration = horizontalInput != 0 ? movementSpeed : deceleration;
+            float targetSpeed = horizontalInput * maxSpeed;
+
+
+
+
+            currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, acceleration * Time.fixedDeltaTime);
+
+            if (grapplingGun != null && grapplingGun.IsOrbiting)
+                return;
+
+            rb.linearVelocity = moveDirection * currentSpeed;
         }
-
-        float acceleration = horizontalInput != 0 ? movementSpeed : deceleration;
-        float targetSpeed = horizontalInput * maxSpeed;
-        
-
-        
-
-        currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, acceleration * Time.fixedDeltaTime);
-
-        if (grapplingGun != null && grapplingGun.IsOrbiting)
-            return;
-
-        rb.linearVelocity = moveDirection * currentSpeed;
     }
 
     public bool IsGrappleHeld()

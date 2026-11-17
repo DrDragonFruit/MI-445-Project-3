@@ -36,6 +36,8 @@ public class PlayerMovement : MonoBehaviour
 
     public float CurrentSpeed => currentSpeed;
 
+    private float curElapsedTimeStunned = 0.0f;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();

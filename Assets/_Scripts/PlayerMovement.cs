@@ -89,7 +89,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-
+            curElapsedTimeStunned += Time.deltaTime;
         }
     }
 

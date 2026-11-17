@@ -69,22 +69,28 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        
-        horizontalInput = move.ReadValue<float>();
+        if (curElapsedTimeStunned >= stunTimeOnHit)
+        {
+            horizontalInput = move.ReadValue<float>();
 
-        if (kick.WasPressedThisFrame())
-            kickBufferCounter = coyotteTime;
+            if (kick.WasPressedThisFrame())
+                kickBufferCounter = coyotteTime;
+            else
+                kickBufferCounter = Mathf.Max(0f, kickBufferCounter - Time.deltaTime);
+
+            if (grapplingGun == null)
+                return;
+
+            if (grapple.WasPressedThisFrame())
+                grapplingGun.SetGrapplePoint();
+
+            if (grapple.WasReleasedThisFrame())
+                grapplingGun.StopGrapple();
+        }
         else
-            kickBufferCounter = Mathf.Max(0f, kickBufferCounter - Time.deltaTime);
+        {
 
-        if (grapplingGun == null)
-            return;
-
-        if (grapple.WasPressedThisFrame())
-            grapplingGun.SetGrapplePoint();
-
-        if (grapple.WasReleasedThisFrame())
-            grapplingGun.StopGrapple();
+        }
     }
 
     private void FixedUpdate()

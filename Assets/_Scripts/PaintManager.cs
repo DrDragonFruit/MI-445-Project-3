@@ -7,6 +7,7 @@ public class PaintManager : MonoBehaviour
 	public float posX = 256f;        //Position the DrawTexture command while testing.
 	public float posY = 256f;        //Position the DrawTexture command while testing.
 	RenderTexture rt;                //RenderTexture to use as buffer.
+	[SerializeField] private Texture2D splatterOne, splatterTwo, splatterThree, splatterFour, splatterFive;
 
 	void Start ()
 	{

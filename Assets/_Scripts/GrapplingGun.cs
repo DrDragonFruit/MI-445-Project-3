@@ -105,7 +105,13 @@ public class GrapplingGun : MonoBehaviour
 
         if (hitCount > 0)
         {
-            playerMovement.StopMovement();
+            if (playerMovement.TryWallKick())
+            {
+                orbitDirection *= -1;
+                m_rigidbody.MoveRotation(m_rigidbody.rotation + 180f);
+            }
+            else 
+                playerMovement.StopMovement();
             return;
         }
 

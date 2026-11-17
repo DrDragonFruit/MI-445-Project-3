@@ -12,6 +12,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float movementSpeed = 5f;
     [SerializeField] private float deceleration = 7f;
     [SerializeField] private GameObject paintSplatter;
+    [Tooltip("How long the player is stunned when taking damage/being hit by an enemy")]
+    [SerializeField] private float stunTimeOnHit = 0.25f;
 
     public PlayerInputActions playerControls;
     private InputAction move;
@@ -25,6 +27,8 @@ public class PlayerMovement : MonoBehaviour
 
     public float CurrentSpeed => currentSpeed;
 
+    private float curElapsedTimeStunned = 0.0f;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -35,6 +39,8 @@ public class PlayerMovement : MonoBehaviour
         playerControls = new PlayerInputActions();
         move = playerControls.Player.Move;
         grapple = playerControls.Player.Grapple;
+
+        curElapsedTimeStunned = stunTimeOnHit;
     }
 
     private void OnEnable()
@@ -51,34 +57,43 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        
-        horizontalInput = move.ReadValue<float>();
+        if (curElapsedTimeStunned >= stunTimeOnHit)
+        {
+            horizontalInput = move.ReadValue<float>();
 
-        if (grapplingGun == null)
-            return;
+            if (grapplingGun == null)
+                return;
 
-        if (grapple.WasPressedThisFrame())
-            grapplingGun.SetGrapplePoint();
+            if (grapple.WasPressedThisFrame())
+                grapplingGun.SetGrapplePoint();
 
-        if (grapple.WasReleasedThisFrame())
-            grapplingGun.StopGrapple();
+                if (grapple.WasReleasedThisFrame())
+                    grapplingGun.StopGrapple();
+        } 
+        else
+        {
+            curElapsedTimeStunned += Time.deltaTime;
+        }
     }
 
     private void FixedUpdate()
     {
-        float acceleration = horizontalInput != 0 ? movementSpeed : deceleration;
-        float targetSpeed = horizontalInput * maxSpeed;
+        if (curElapsedTimeStunned >= stunTimeOnHit)
+        {
+            float acceleration = horizontalInput != 0 ? movementSpeed : deceleration;
+            float targetSpeed = horizontalInput * maxSpeed;
         
 
         
 
-        currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, acceleration * Time.fixedDeltaTime);
+            currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, acceleration * Time.fixedDeltaTime);
 
-        if (grapplingGun != null && grapplingGun.IsOrbiting)
-            return;
+            if (grapplingGun != null && grapplingGun.IsOrbiting)
+                return;
 
-        Vector2 moveDirection = transform.right;
-        rb.linearVelocity = moveDirection * currentSpeed;
+            Vector2 moveDirection = transform.right;
+            rb.linearVelocity = moveDirection * currentSpeed;
+        }
     }
 
     public bool IsGrappleHeld()
@@ -91,5 +106,11 @@ public class PlayerMovement : MonoBehaviour
         currentSpeed = 0f;
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
+    }
+
+    public void HitByEnemy()
+    {
+        curElapsedTimeStunned = 0.0f;
+        StopMovement();
     }
 }

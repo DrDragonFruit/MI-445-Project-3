@@ -49,6 +49,8 @@ public class PlayerMovement : MonoBehaviour
         move = playerControls.Player.Move;
         grapple = playerControls.Player.Grapple;
         kick = playerControls.Player.Kick;
+
+        curElapsedTimeStunned = stunTimeOnHit;
     }
 
     private void OnEnable()

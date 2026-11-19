@@ -88,7 +88,7 @@ public class GrapplingGun : MonoBehaviour
         if (radius < 0.001f)
             return;
 
-        float speed = playerMovement.CurrentSpeed;
+        float speed = Mathf.Abs(playerMovement.CurrentSpeed);
         float angle = orbitDirection * speed / radius * Mathf.Rad2Deg * Time.fixedDeltaTime;
 
         Vector2 nextPosition = grapplePoint + (Vector2)(Quaternion.Euler(0f, 0f, angle) * direction);
@@ -100,23 +100,24 @@ public class GrapplingGun : MonoBehaviour
         ContactFilter2D filter = new ContactFilter2D();
         filter.SetLayerMask(collisionLayers);
         filter.useLayerMask = true;
+        filter.useTriggers = false;
 
         int hitCount = m_rigidbody.Cast(movement.normalized, filter, collisionHits, movement.magnitude + collisionOffset);
 
         if (hitCount > 0)
         {
-            if (playerMovement.TryWallKick())
-            {
-                orbitDirection *= -1;
-                m_rigidbody.MoveRotation(m_rigidbody.rotation + 180f);
-            }
-            else 
+            if (playerMovement.kickBufferCounter <= 0f)
                 playerMovement.StopMovement();
+
             return;
         }
 
+        Vector2 nextDirection = (nextPosition - grapplePoint).normalized;
+        Vector2 tangent = new Vector2(-nextDirection.y, nextDirection.x) * orbitDirection;
+        float facingAngle = Mathf.Atan2(tangent.y, tangent.x) * Mathf.Rad2Deg;
+
         m_rigidbody.MovePosition(nextPosition);
-        m_rigidbody.MoveRotation(m_rigidbody.rotation + angle);
+        m_rigidbody.MoveRotation(facingAngle);
     }
 
     private void RotateGun(Vector3 lookPoint, bool allowRotationOverTime)
@@ -200,6 +201,17 @@ public class GrapplingGun : MonoBehaviour
         gunHolder.rotation = Quaternion.Euler(0f, 0f, angle);
 
         isOrbiting = true;
+    }
+
+    public void ReverseOrbitDirection()
+    {
+        if (!isOrbiting)
+            return;
+
+        orbitDirection *= -1f;
+
+        float newAngle = m_rigidbody.rotation + 180f;
+        m_rigidbody.MoveRotation(newAngle);
     }
 
     public void StopGrapple()

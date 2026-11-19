@@ -23,16 +23,17 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private GrapplingGun grapplingGun;
+    public Animator animatior;
 
     [Header("Wall Kick")]
-    [SerializeField] private float coyotteTime = 0.2f;
+    [SerializeField] private float coyoteTime = 0.2f;
+    [SerializeField] private float kickRange = 3f;
+    [SerializeField] private LayerMask wallLayer;
+    [SerializeField] private Camera mainCamera;
+    public float kickBufferCounter;
 
     private float horizontalInput;
     private float currentSpeed;
-    private float kickBufferCounter;
-    private bool isTouchingWall;
-    public bool kickRequested;
-    private Vector2 wallNormal;
 
     public float CurrentSpeed => currentSpeed;
 
@@ -51,6 +52,9 @@ public class PlayerMovement : MonoBehaviour
         kick = playerControls.Player.Kick;
 
         curElapsedTimeStunned = stunTimeOnHit;
+
+        if (mainCamera == null)
+            mainCamera = Camera.main;
     }
 
     private void OnEnable()
@@ -74,9 +78,7 @@ public class PlayerMovement : MonoBehaviour
             horizontalInput = move.ReadValue<float>();
 
             if (kick.WasPressedThisFrame())
-                kickBufferCounter = coyotteTime;
-            else
-                kickBufferCounter = Mathf.Max(0f, kickBufferCounter - Time.deltaTime);
+                TryWallKick();
 
             if (grapplingGun == null)
                 return;
@@ -95,23 +97,18 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        kickBufferCounter = Mathf.Max(0f, kickBufferCounter - Time.deltaTime);
+
         if (curElapsedTimeStunned >= stunTimeOnHit)
         {
             Vector2 moveDirection = transform.right;
 
-            if (kickBufferCounter > 0f && isTouchingWall)
-            {
-                WallKick(wallNormal);
-                kickBufferCounter = 0f;
-            }
-
             float acceleration = horizontalInput != 0 ? movementSpeed : deceleration;
             float targetSpeed = horizontalInput * maxSpeed;
 
-
-
-
             currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, acceleration * Time.fixedDeltaTime);
+
+            animatior.SetFloat("Speed", currentSpeed);
 
             if (grapplingGun != null && grapplingGun.IsOrbiting)
                 return;
@@ -132,34 +129,6 @@ public class PlayerMovement : MonoBehaviour
         rb.angularVelocity = 0f;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (grapplingGun != null && grapplingGun.IsOrbiting)
-            return;
-
-        isTouchingWall = true;
-        wallNormal = collision.GetContact(0).normal;
-
-        if (TryWallKick())
-            WallKick(wallNormal);
-        else
-            StopMovement();
-    }
-
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        if (grapplingGun != null && grapplingGun.IsOrbiting)
-            return;
-
-        isTouchingWall = true;
-        wallNormal = collision.GetContact(0).normal;
-    }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        isTouchingWall = false;
-    }
-
     private void WallKick(Vector2 wallNormal)
     {
         Vector2 facingDirection = transform.right;
@@ -170,19 +139,66 @@ public class PlayerMovement : MonoBehaviour
         rb.rotation = angle;
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
+
+        kickBufferCounter = coyoteTime;
     }
 
-    public bool TryWallKick()
-    {
-        if (kickBufferCounter <= 0f)
-            return false;
-
-        kickBufferCounter = 0f;
-        return true;
-    }
     public void HitByEnemy()
     {
         curElapsedTimeStunned = 0.0f;
         StopMovement();
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (kickBufferCounter > 0f)
+            return;
+
+        StopMovement();
+    }
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (kickBufferCounter > 0f)
+            return;
+
+        StopMovement();
+    }
+
+    private void TryWallKick()
+    {
+        if (Mouse.current == null || mainCamera == null)
+            return;
+
+        Vector2 mousePosition = Mouse.current.position.ReadValue();
+        Ray ray = mainCamera.ScreenPointToRay(mousePosition);
+        Plane gamePlane = new Plane(Vector3.forward, Vector3.zero);
+
+        if (!gamePlane.Raycast(ray, out float distance))
+            return;
+
+        Vector2 mouseWorldPosition = ray.GetPoint(distance);
+        Vector2 direction = mouseWorldPosition - rb.position;
+
+        if (direction.sqrMagnitude < 0.0001f)
+            return;
+
+        Vector2 forward = transform.right;
+        Vector2 aimDirection = direction.normalized;
+
+        if (Vector2.Dot(forward, aimDirection) <= 0f)
+            return;
+
+        animatior.SetTrigger("Kicked");
+
+        RaycastHit2D hit = Physics2D.Raycast(rb.position, direction.normalized, kickRange, wallLayer);
+
+        if (hit.collider == null)
+            return;
+
+        if (grapplingGun != null && grapplingGun.IsOrbiting)
+            grapplingGun.ReverseOrbitDirection();
+        else
+            WallKick(hit.normal);
     }
 }

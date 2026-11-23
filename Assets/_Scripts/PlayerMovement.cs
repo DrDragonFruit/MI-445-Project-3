@@ -129,6 +129,13 @@ public class PlayerMovement : MonoBehaviour
         rb.angularVelocity = 0f;
     }
 
+    public void Boost(float boostAmount)
+    {
+        currentSpeed *= boostAmount;
+        rb.linearVelocity *= boostAmount;
+        rb.angularVelocity *= boostAmount;
+    }
+
     private void WallKick(Vector2 wallNormal)
     {
         Vector2 facingDirection = transform.right;

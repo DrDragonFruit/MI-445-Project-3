@@ -329,6 +329,11 @@ MonoBehaviour:
     m_RotationOrder: 4
   ropeProgressionSpeed: 6
   isGrappling: 1
+--- !u!1 &234828905 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8765037536082502563, guid: 140a26592a4d6214a89507be075cff53, type: 3}
+  m_PrefabInstance: {fileID: 1896613730}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &319262990
 GameObject:
   m_ObjectHideFlags: 0
@@ -349,7 +354,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!58 &319262991
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -404,8 +409,15 @@ MonoBehaviour:
   paintSplatter: {fileID: 0}
   stunTimeOnHit: 0.25
   grapplingGun: {fileID: 842364861}
-  coyotteTime: 0.2
-  kickRequested: 0
+  animatior: {fileID: 0}
+  coyoteTime: 0.2
+  kickRange: 3
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  mainCamera: {fileID: 0}
+  kickBufferCounter: 0
+  turnSpeed: 5
 --- !u!50 &319262993
 Rigidbody2D:
   serializedVersion: 5
@@ -534,7 +546,7 @@ PrefabInstance:
     - target: {fileID: 4185484675251439036, guid: f72194acf14fd9a45846834e658c4ca5, type: 3}
       propertyPath: player
       value: 
-      objectReference: {fileID: 319262990}
+      objectReference: {fileID: 234828905}
     - target: {fileID: 8613573078721305778, guid: f72194acf14fd9a45846834e658c4ca5, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.21630812
@@ -76537,6 +76549,79 @@ TilemapCollider2D:
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0
   m_UseDelaunayMesh: 0
+--- !u!1001 &1896613730
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1129718937608694222, guid: 140a26592a4d6214a89507be075cff53, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -7.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 1129718937608694222, guid: 140a26592a4d6214a89507be075cff53, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.63
+      objectReference: {fileID: 0}
+    - target: {fileID: 1129718937608694222, guid: 140a26592a4d6214a89507be075cff53, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1129718937608694222, guid: 140a26592a4d6214a89507be075cff53, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1129718937608694222, guid: 140a26592a4d6214a89507be075cff53, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1129718937608694222, guid: 140a26592a4d6214a89507be075cff53, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1129718937608694222, guid: 140a26592a4d6214a89507be075cff53, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1129718937608694222, guid: 140a26592a4d6214a89507be075cff53, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1129718937608694222, guid: 140a26592a4d6214a89507be075cff53, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1129718937608694222, guid: 140a26592a4d6214a89507be075cff53, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1269199198081262159, guid: 140a26592a4d6214a89507be075cff53, type: 3}
+      propertyPath: turnSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1269199198081262159, guid: 140a26592a4d6214a89507be075cff53, type: 3}
+      propertyPath: mainCamera
+      value: 
+      objectReference: {fileID: 1363441285}
+    - target: {fileID: 1269199198081262159, guid: 140a26592a4d6214a89507be075cff53, type: 3}
+      propertyPath: kickBufferCounter
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8765037536082502563, guid: 140a26592a4d6214a89507be075cff53, type: 3}
+      propertyPath: m_Name
+      value: Player (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8853634974469405149, guid: 140a26592a4d6214a89507be075cff53, type: 3}
+      propertyPath: cameraTransform
+      value: 
+      objectReference: {fileID: 1363441286}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 140a26592a4d6214a89507be075cff53, type: 3}
 --- !u!1 &2110446122
 GameObject:
   m_ObjectHideFlags: 0
@@ -76591,3 +76676,4 @@ SceneRoots:
   - {fileID: 319262995}
   - {fileID: 2110446124}
   - {fileID: 592952303}
+  - {fileID: 1896613730}

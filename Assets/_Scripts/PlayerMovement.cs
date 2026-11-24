@@ -20,6 +20,7 @@ public class PlayerMovement : MonoBehaviour
     private InputAction move;
     private InputAction grapple;
     private InputAction kick;
+    private InputAction hone;
 
     [Header("References")]
     [SerializeField] private GrapplingGun grapplingGun;
@@ -34,6 +35,10 @@ public class PlayerMovement : MonoBehaviour
 
     private float horizontalInput;
     private float currentSpeed;
+
+    [SerializeField] private float turnSpeed = 5f;
+    private float targetAngle;
+    private bool isTurning;
 
     public float CurrentSpeed => currentSpeed;
 
@@ -50,6 +55,7 @@ public class PlayerMovement : MonoBehaviour
         move = playerControls.Player.Move;
         grapple = playerControls.Player.Grapple;
         kick = playerControls.Player.Kick;
+        hone = playerControls.Player.Hone;
 
         curElapsedTimeStunned = stunTimeOnHit;
 
@@ -62,6 +68,7 @@ public class PlayerMovement : MonoBehaviour
         move.Enable();
         grapple.Enable();
         kick.Enable();
+        hone.Enable();
     }
 
     private void OnDisable()
@@ -69,6 +76,7 @@ public class PlayerMovement : MonoBehaviour
         move.Disable();
         grapple.Disable();
         kick.Disable();
+        hone.Disable();
     }
 
     private void Update()
@@ -88,6 +96,12 @@ public class PlayerMovement : MonoBehaviour
 
             if (grapple.WasReleasedThisFrame())
                 grapplingGun.StopGrapple();
+
+            if (hone.IsPressed())
+                SetHoneTarget();
+
+            if (hone.WasReleasedThisFrame())
+                isTurning = false;
         }
         else
         {
@@ -97,12 +111,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        kickBufferCounter = Mathf.Max(0f, kickBufferCounter - Time.deltaTime);
+        kickBufferCounter = Mathf.Max(0f, kickBufferCounter - Time.fixedDeltaTime);
 
         if (curElapsedTimeStunned >= stunTimeOnHit)
         {
-            Vector2 moveDirection = transform.right;
-
             float acceleration = horizontalInput != 0 ? movementSpeed : deceleration;
             float targetSpeed = horizontalInput * maxSpeed;
 
@@ -111,9 +123,23 @@ public class PlayerMovement : MonoBehaviour
             animatior.SetFloat("Speed", currentSpeed);
 
             if (grapplingGun != null && grapplingGun.IsOrbiting)
+            {
+                isTurning = false;
                 return;
+            }
 
-            rb.linearVelocity = moveDirection * currentSpeed;
+            if (isTurning)
+            {
+                float nextAngle = Mathf.MoveTowardsAngle(
+                    rb.rotation, targetAngle, turnSpeed * Time.fixedDeltaTime);
+
+                rb.MoveRotation(nextAngle);
+
+                if (Mathf.Abs(Mathf.DeltaAngle(rb.rotation, targetAngle)) < 0.1f)
+                    isTurning = false;
+            }
+
+            rb.linearVelocity = (Vector2)transform.right * currentSpeed;
         }
     }
 
@@ -127,6 +153,13 @@ public class PlayerMovement : MonoBehaviour
         currentSpeed = 0f;
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
+    }
+
+    public void Boost(float boostAmount)
+    {
+        currentSpeed *= boostAmount;
+        rb.linearVelocity *= boostAmount;
+        rb.angularVelocity *= boostAmount;
     }
 
     private void WallKick(Vector2 wallNormal)
@@ -151,14 +184,19 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (kickBufferCounter > 0f)
-            return;
-
-        StopMovement();
+        HandleWallCollision(collision);
     }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
+        HandleWallCollision(collision);
+    }
+
+    private void HandleWallCollision(Collision2D collision)
+    {
+        if ((wallLayer.value & (1 << collision.gameObject.layer)) == 0)
+            return;
+
         if (kickBufferCounter > 0f)
             return;
 
@@ -167,38 +205,41 @@ public class PlayerMovement : MonoBehaviour
 
     private void TryWallKick()
     {
-        if (Mouse.current == null || mainCamera == null)
-            return;
-
-        Vector2 mousePosition = Mouse.current.position.ReadValue();
-        Ray ray = mainCamera.ScreenPointToRay(mousePosition);
-        Plane gamePlane = new Plane(Vector3.forward, Vector3.zero);
-
-        if (!gamePlane.Raycast(ray, out float distance))
-            return;
-
-        Vector2 mouseWorldPosition = ray.GetPoint(distance);
-        Vector2 direction = mouseWorldPosition - rb.position;
-
-        if (direction.sqrMagnitude < 0.0001f)
-            return;
-
         Vector2 forward = transform.right;
-        Vector2 aimDirection = direction.normalized;
 
-        if (Vector2.Dot(forward, aimDirection) <= 0f)
-            return;
+        CircleCollider2D circle = GetComponent<CircleCollider2D>();
+        float radius = circle.radius * Mathf.Max(Mathf.Abs(transform.lossyScale.x), Mathf.Abs(transform.lossyScale.y)) * 0.8f;
 
-        animatior.SetTrigger("Kicked");
-
-        RaycastHit2D hit = Physics2D.Raycast(rb.position, direction.normalized, kickRange, wallLayer);
+        RaycastHit2D hit = Physics2D.CircleCast(circle.bounds.center, radius, forward, kickRange, wallLayer);
 
         if (hit.collider == null)
             return;
+
+        animatior.SetTrigger("Kicked");
 
         if (grapplingGun != null && grapplingGun.IsOrbiting)
             grapplingGun.ReverseOrbitDirection();
         else
             WallKick(hit.normal);
+    }
+
+    private void SetHoneTarget()
+    {
+        if (Mouse.current == null || mainCamera == null)
+            return;
+
+        Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        Plane gamePlane = new Plane(Vector3.forward, Vector3.zero);
+
+        if (!gamePlane.Raycast(ray, out float distance))
+            return;
+
+        Vector2 direction = (Vector2)ray.GetPoint(distance) - rb.position;
+
+        if (direction.sqrMagnitude < 0.0001f)
+            return;
+
+        targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        isTurning = true;
     }
 }

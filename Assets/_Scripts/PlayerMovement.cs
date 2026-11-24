@@ -200,7 +200,7 @@ public class PlayerMovement : MonoBehaviour
         if (kickBufferCounter > 0f)
             return;
 
-        StopMovement();
+        //StopMovement();
     }
 
     private void TryWallKick()

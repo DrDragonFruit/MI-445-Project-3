@@ -18,7 +18,7 @@ public class PlayerMovement : MonoBehaviour
 
     public PlayerInputActions playerControls;
     private InputAction move;
-    private InputAction grapple;
+    public InputAction grapple;
     private InputAction kick;
 
     [Header("References")]
@@ -33,11 +33,13 @@ public class PlayerMovement : MonoBehaviour
     public float kickBufferCounter;
 
     private float horizontalInput;
-    private float currentSpeed;
+    public float currentSpeed;
 
     public float CurrentSpeed => currentSpeed;
 
     private float curElapsedTimeStunned = 0.0f;
+
+    public bool isGrappling;
 
     private void Awake()
     {

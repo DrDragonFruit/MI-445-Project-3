@@ -1,16 +1,20 @@
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class PaintManager : MonoBehaviour
 {
-	public Transform playerPos;
-    public Texture2D texture;        //Starting image.
+	[SerializeField] private PlayerMovement playerMovement;
+	[SerializeField] private Transform playerPos;
+	[SerializeField] private Rigidbody2D rb;
+    [SerializeField] Texture2D texture;        //Starting image.
 	private RenderTexture rt;                //RenderTexture to use as buffer.
-	private List<Texture2D> splatlist = new List<Texture2D>();
-	private Texture2D lastSplat, stampTexture;
-	private MeshRenderer meshRenderer;
+	[SerializeField] private List<Texture2D> splatlist = new List<Texture2D>();
+	[SerializeField] private Texture2D lastSplat, stampTexture;
+	[SerializeField] private MeshRenderer meshRenderer;
 	private int i;
+	private float playerSpeed;
 	[SerializeField] private Texture2D splatterOne, splatterTwo, splatterThree, splatterFour, splatterFive;
 
 	void Start()
@@ -44,8 +48,22 @@ public class PaintManager : MonoBehaviour
 
     void LateUpdate()
     {
-        CreateSplatter();
-    }
+		if (rb.linearVelocity.magnitude >= 0f || playerMovement.IsGrappleHeld())
+		{
+			{
+				if (playerMovement.IsGrappleHeld())
+				{
+					playerSpeed = playerMovement.currentSpeed;
+					
+				}
+				else
+				{
+					playerSpeed = rb.linearVelocity.magnitude;
+				}
+			}
+			CreateSplatter();
+    	}
+	}
 
     public void CreateSplatter()
 	{
@@ -62,8 +80,8 @@ public class PaintManager : MonoBehaviour
 
 		stampTexture = splatterOne;
 
-		float quadWidth = stampTexture.width / mapBounds.size.x;
-		float quadHeight = stampTexture.height / mapBounds.size.y;
+		float quadWidth = (stampTexture.width * playerSpeed/2) / mapBounds.size.x;
+		float quadHeight = (stampTexture.height * playerSpeed/2) / mapBounds.size.y;
 
 		float rotationAngle = Random.Range(0f, 360f);
 

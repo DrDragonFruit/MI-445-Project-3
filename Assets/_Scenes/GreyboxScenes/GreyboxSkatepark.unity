@@ -403,6 +403,16 @@ MonoBehaviour:
   deceleration: 3
   paintSplatter: {fileID: 0}
   stunTimeOnHit: 0.25
+  grapple:
+    m_Name: Grapple
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 500e1ada-d78a-4423-9153-735d843b6e7f
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+    m_Priority: 0
   grapplingGun: {fileID: 842364861}
   animatior: {fileID: 0}
   coyoteTime: 0.2
@@ -412,6 +422,8 @@ MonoBehaviour:
     m_Bits: 64
   mainCamera: {fileID: 0}
   kickBufferCounter: 0
+  currentSpeed: 0
+  isGrappling: 0
 --- !u!50 &319262993
 Rigidbody2D:
   serializedVersion: 5
@@ -529,6 +541,71 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CameraFollow
   cameraTransform: {fileID: 1363441286}
   playerTransform: {fileID: 319262995}
+--- !u!1001 &417355147
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 22025752314923592, guid: 7f85766468d648041ad27d151a2923bb, type: 3}
+      propertyPath: m_Name
+      value: Boost Tile
+      objectReference: {fileID: 0}
+    - target: {fileID: 5812220175532854384, guid: 7f85766468d648041ad27d151a2923bb, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -5.968541
+      objectReference: {fileID: 0}
+    - target: {fileID: 5812220175532854384, guid: 7f85766468d648041ad27d151a2923bb, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 4.006528
+      objectReference: {fileID: 0}
+    - target: {fileID: 5812220175532854384, guid: 7f85766468d648041ad27d151a2923bb, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5812220175532854384, guid: 7f85766468d648041ad27d151a2923bb, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5812220175532854384, guid: 7f85766468d648041ad27d151a2923bb, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5812220175532854384, guid: 7f85766468d648041ad27d151a2923bb, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5812220175532854384, guid: 7f85766468d648041ad27d151a2923bb, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5812220175532854384, guid: 7f85766468d648041ad27d151a2923bb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5812220175532854384, guid: 7f85766468d648041ad27d151a2923bb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5812220175532854384, guid: 7f85766468d648041ad27d151a2923bb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6400528077596749099, guid: 7f85766468d648041ad27d151a2923bb, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1120529983}
+    - target: {fileID: 6400528077596749099, guid: 7f85766468d648041ad27d151a2923bb, type: 3}
+      propertyPath: boostAmount
+      value: 2
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7f85766468d648041ad27d151a2923bb, type: 3}
 --- !u!1001 &592952303
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -621,8 +698,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d895d81f8e662a43b6b0d94a2d309f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PaintManager
+  playerMovement: {fileID: 1120529986}
   playerPos: {fileID: 1120529989}
+  rb: {fileID: 1120529987}
   texture: {fileID: 2800000, guid: 34aef9ed49a92aa4eb6d919835495b0f, type: 3}
+  splatlist: []
+  lastSplat: {fileID: 0}
+  stampTexture: {fileID: 0}
+  meshRenderer: {fileID: 0}
   splatterOne: {fileID: 2800000, guid: 25cbaa1fcf8736145b514fe340323a66, type: 3}
   splatterTwo: {fileID: 2800000, guid: f3dc62d24095a0e4d9fc9de3732c4f29, type: 3}
   splatterThree: {fileID: 2800000, guid: 78a2b8b98907e1949bb5245ac2087f9c, type: 3}
@@ -966,6 +1049,16 @@ MonoBehaviour:
   deceleration: 3
   paintSplatter: {fileID: 0}
   stunTimeOnHit: 0.25
+  grapple:
+    m_Name: Grapple
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: c4383c47-a41d-4d66-83e7-53d9fa804e0b
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+    m_Priority: 0
   grapplingGun: {fileID: 1970046358}
   animatior: {fileID: 836716362}
   coyoteTime: 0.2
@@ -975,6 +1068,8 @@ MonoBehaviour:
     m_Bits: 64
   mainCamera: {fileID: 0}
   kickBufferCounter: 0
+  currentSpeed: 0
+  isGrappling: 0
 --- !u!50 &1120529987
 Rigidbody2D:
   serializedVersion: 5
@@ -1528,6 +1623,7 @@ GameObject:
   - component: {fileID: 1745006721}
   - component: {fileID: 1745006723}
   - component: {fileID: 1745006722}
+  - component: {fileID: 1745006724}
   m_Layer: 0
   m_Name: GreyboxBackground
   m_TagString: Untagged
@@ -58902,6 +58998,44 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!114 &1745006724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1745006720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e89f757cf7696d489118a5eef5436ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
+  maxSpeed: 10
+  movementSpeed: 5
+  deceleration: 7
+  paintSplatter: {fileID: 0}
+  stunTimeOnHit: 0.25
+  grapple:
+    m_Name: Grapple
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: a561f73a-3cf1-44e1-9874-b6ac275c8a8b
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+    m_Priority: 0
+  grapplingGun: {fileID: 0}
+  animatior: {fileID: 0}
+  coyoteTime: 0.2
+  kickRange: 3
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  mainCamera: {fileID: 0}
+  kickBufferCounter: 0
+  currentSpeed: 0
+  isGrappling: 0
 --- !u!1 &1866761995
 GameObject:
   m_ObjectHideFlags: 0
@@ -77389,3 +77523,4 @@ SceneRoots:
   - {fileID: 592952303}
   - {fileID: 623189703}
   - {fileID: 1120529989}
+  - {fileID: 417355147}
